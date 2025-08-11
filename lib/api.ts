@@ -10,12 +10,14 @@ export interface FetchNotesProps {
   page: number;
   perPage: number;
   totalPages: number;
+  tag: string;
 }
 
 export const fetchNotes = async (
   search: string,
   page: number = 1,
   perPage: number = 10,
+  tag?: string,
 ): Promise<FetchNotesProps> => {
   const params: Record<string, string | number> = {
     page: page.toString(),
@@ -25,6 +27,10 @@ export const fetchNotes = async (
   // Додаємо search тільки якщо він не порожній
   if (search.trim() !== '') {
     params.search = search;
+  }
+  // Додаємо фільтрацію по тегу, тільки якщо він заданий і не "All"
+  if (tag && tag !== 'All') {
+    params.tag = tag;
   }
 
   const response = await axios.get<FetchNotesProps>(`/notes`, {
@@ -61,4 +67,15 @@ export const deleteNote = async (id: string): Promise<Note> => {
     headers: { Authorization: `Bearer ${API_TOKEN}` },
   });
   return response.data;
+};
+
+export const getNotesByTag = async (tag: string): Promise<Note[]> => {
+  const { data } = await axios.get<{ notes: Note[] }>(`/notes`, {
+    params: { tag },
+    headers: {
+      Authorization: `Bearer ${API_TOKEN}`,
+    },
+  });
+
+  return data.notes;
 };

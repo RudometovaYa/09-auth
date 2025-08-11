@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import NoteList from '@/components/NoteList/NoteList';
-import { fetchNotes } from '../../lib/api';
+import { fetchNotes } from '../../../../lib/api';
 import Loader from '@/components/Loader/Loader';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import Pagination from '@/components/Pagination/Pagination';
@@ -17,9 +17,10 @@ import { FetchNotesProps } from '@/lib/api';
 
 type NotesClientProps = {
   initialNotes: FetchNotesProps;
+  tag?: string;
 };
 
-export default function NotesClient({ initialNotes }: NotesClientProps) {
+export default function NotesClient({ initialNotes, tag }: NotesClientProps) {
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -28,8 +29,8 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
   const safeQuery = debouncedQuery.trim();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes', safeQuery, currentPage],
-    queryFn: () => fetchNotes(safeQuery, currentPage, 10),
+    queryKey: ['notes', safeQuery, currentPage, tag],
+    queryFn: () => fetchNotes(safeQuery, currentPage, 10, tag),
     placeholderData: keepPreviousData,
     initialData:
       currentPage === 1 && safeQuery === '' ? initialNotes : undefined,
