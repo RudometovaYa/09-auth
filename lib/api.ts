@@ -7,10 +7,10 @@ axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
 
 export interface FetchNotesProps {
   notes: Note[];
-  page: number;
-  perPage: number;
-  totalPages: number;
-  tag: string;
+  page?: number;
+  perPage?: number;
+  totalPages?: number;
+  tag?: string;
 }
 
 export const fetchNotes = async (

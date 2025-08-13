@@ -5,12 +5,19 @@ import css from './ModalNotes.module.css';
 
 type Props = {
   children: React.ReactNode;
+  onClose?: () => void;
 };
 
-const Modal = ({ children }: Props) => {
+const Modal = ({ children, onClose }: Props) => {
   const router = useRouter();
 
-  const close = () => router.back();
+  const close = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <div className={css.backdrop}>
