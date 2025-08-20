@@ -11,15 +11,13 @@ import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { useDebounce } from 'use-debounce';
-import { FetchNotesProps } from '@/lib/api';
 import Link from 'next/link';
 
 type NotesClientProps = {
-  initialNotes: FetchNotesProps;
   tag?: string;
 };
 
-export default function NotesClient({ initialNotes, tag }: NotesClientProps) {
+export default function NotesClient({ tag }: NotesClientProps) {
   const [query, setQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -30,8 +28,6 @@ export default function NotesClient({ initialNotes, tag }: NotesClientProps) {
     queryKey: ['notes', safeQuery, currentPage, tag],
     queryFn: () => fetchNotes(safeQuery, currentPage, 10, tag),
     placeholderData: keepPreviousData,
-    initialData:
-      currentPage === 1 && safeQuery === '' ? initialNotes : undefined,
   });
 
   const handleSearch = (value: string) => {

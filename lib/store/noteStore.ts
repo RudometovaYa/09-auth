@@ -10,7 +10,6 @@ const initialDraft: CreateNoteProps = {
 
 type NoteDraft = {
   draft: CreateNoteProps;
-  privateKey: string;
   setDraft: (newData: CreateNoteProps) => void;
   clearDraft: () => void;
 };
@@ -20,7 +19,6 @@ export const useNoteDraft = create<NoteDraft>()(
     (set) => {
       return {
         draft: initialDraft,
-        privateKey: 'asd',
         setDraft: (newData: CreateNoteProps) => set({ draft: newData }),
         clearDraft: () => set({ draft: initialDraft }),
       };
