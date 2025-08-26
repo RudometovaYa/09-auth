@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import NoteList from '@/components/NoteList/NoteList';
-import { fetchNotes } from '../../../../lib/api';
+import { fetchNotes } from '../../../../../lib/api/clientApi';
 import Loader from '@/components/Loader/Loader';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import Pagination from '@/components/Pagination/Pagination';
@@ -26,7 +26,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', safeQuery, currentPage, tag],
-    queryFn: () => fetchNotes(safeQuery, currentPage, 10, tag),
+    queryFn: () => fetchNotes(currentPage, 10, safeQuery, tag),
     placeholderData: keepPreviousData,
   });
 

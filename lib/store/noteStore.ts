@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CreateNoteProps } from '../api';
+import type { CreateNoteProps } from '../../types/note';
 
 const initialDraft: CreateNoteProps = {
   title: '',

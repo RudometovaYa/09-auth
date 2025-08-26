@@ -7,7 +7,8 @@ import { useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote, CreateNoteProps } from '../../lib/api';
+import { createNote } from '../../lib/api/clientApi';
+import { NewNoteData, NoteTag } from '../../types/note';
 
 export default function NoteForm() {
   const { draft, setDraft, clearDraft } = useNoteDraft();
@@ -30,16 +31,16 @@ export default function NoteForm() {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     setDraft({
-      ...(draft as CreateNoteProps),
-      [e.target.name as keyof CreateNoteProps]: e.target.value,
+      ...(draft as NewNoteData),
+      [e.target.name as keyof NewNoteData]: e.target.value,
     });
   };
 
   const handleSubmit = (formData: FormData) => {
-    const data: CreateNoteProps = {
+    const data: NewNoteData = {
       title: formData.get('title') as string,
       content: formData.get('content') as string,
-      tag: formData.get('tag') as string,
+      tag: formData.get('tag') as NoteTag,
     };
 
     mutate(data);

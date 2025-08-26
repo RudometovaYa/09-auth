@@ -14,3 +14,5 @@ export interface NewNoteData {
   content: string;
   tag: NoteTag;
 }
+
+export type CreateNoteProps = NewNoteData;
