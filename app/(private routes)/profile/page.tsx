@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import css from './ProfilePage.module.css';
+import css from './edit/ProfilePage.module.css';
 import { getCurrentUser } from '@/lib/api/clientApi';
 
 export default function ProfilePage() {
