@@ -14,7 +14,7 @@ export default function EditProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    async function fetchUser() {
       try {
         const user = await getCurrentUser();
         setUsername(user.username);
@@ -25,7 +25,8 @@ export default function EditProfilePage() {
       } finally {
         setLoading(false);
       }
-    };
+    }
+
     fetchUser();
   }, []);
 
