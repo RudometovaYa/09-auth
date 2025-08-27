@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import css from './ProfilePage.module.css';
 import { getCurrentUser, updateCurrentUser } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore'; // Імпортуємо глобальний стан
 
 export default function EditProfilePage() {
   const [username, setUsername] = useState('');
@@ -12,6 +13,7 @@ export default function EditProfilePage() {
   const [avatar, setAvatar] = useState('');
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth); // Дістанемо метод для оновлення користувача
 
   useEffect(() => {
     async function fetchUser() {
@@ -33,7 +35,8 @@ export default function EditProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateCurrentUser({ username });
+      const updatedUser = await updateCurrentUser({ username });
+      setAuth(updatedUser); // Оновлюємо глобальний стан аутентифікації
       router.push('/profile');
     } catch (err) {
       console.error('Failed to update user:', err);

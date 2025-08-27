@@ -1,42 +1,31 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
+import type { Metadata } from 'next';
 import css from './edit/ProfilePage.module.css';
-import { getCurrentUser } from '@/lib/api/clientApi';
+import { getServerMe } from '@/lib/api/serverApi';
 
-export default function ProfilePage() {
-  const [user, setUser] = useState<{
-    username: string;
-    email: string;
-    avatar: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const userData = await getCurrentUser();
-        setUser(userData);
-      } catch (err) {
-        console.error('Failed to fetch user:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
+export const metadata: Metadata = {
+  title: 'Профіль користувача',
+};
 
-    fetchUser();
-  }, []);
+export default async function ProfilePage() {
+  let user = null;
+  try {
+    user = await getServerMe(); // <-- виклик серверної функції для отримання користувача
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+  }
 
-  if (loading) return <p>Loading...</p>;
-  if (!user) return <p>User not found</p>;
+  if (!user) {
+    return <p>Користувача не знайдено</p>;
+  }
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
-        <h1 className={css.formTitle}>Profile</h1>
+        <h1 className={css.formTitle}>Профіль</h1>
 
         <Image
           src={user.avatar || '/default-avatar.png'}
@@ -50,12 +39,9 @@ export default function ProfilePage() {
         <p>Email: {user.email}</p>
 
         <div className={css.actions}>
-          <button
-            className={css.editButton}
-            onClick={() => router.push('/profile/edit')}
-          >
-            Edit
-          </button>
+          <Link href="/profile/edit" className={css.editButton}>
+            Редагувати
+          </Link>
         </div>
       </div>
     </main>

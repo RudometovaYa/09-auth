@@ -15,7 +15,7 @@ interface FetchNotesParams {
   tag?: string;
 }
 
-interface CustomError extends Error {
+export interface CustomError extends Error {
   status?: number;
 }
 
@@ -80,75 +80,80 @@ export async function deleteNote(noteId: string): Promise<Note> {
   );
 }
 
-// 🔐 AUTH
-
 export const registerUser = async (
   email: string,
   password: string,
 ): Promise<User> => {
-  const res = await fetch('/api/auth/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-    credentials: 'include',
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    const error = new Error(
-      errorData.error || 'Registration failed',
-    ) as CustomError;
-    error.status = res.status;
-    throw error;
+  try {
+    const { data } = await api.post<User>(
+      '/auth/register',
+      { email, password },
+      { withCredentials: true },
+    );
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const error = new Error(
+        err.response.data.error || 'Registration failed',
+      ) as CustomError;
+      error.status = err.response.status;
+      throw error;
+    }
+    throw err;
   }
-
-  return res.json();
 };
 
 export const loginUser = async (
   email: string,
   password: string,
 ): Promise<User> => {
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-    credentials: 'include',
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    const error = new Error(errorData.error || 'Login failed') as CustomError;
-    error.status = res.status;
-    throw error;
+  try {
+    const { data } = await api.post<User>(
+      '/auth/login',
+      { email, password },
+      { withCredentials: true },
+    );
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const error = new Error(
+        err.response.data.error || 'Login failed',
+      ) as CustomError;
+      error.status = err.response.status;
+      throw error;
+    }
+    throw err;
   }
-
-  return res.json();
 };
 
 export const logoutUser = async (): Promise<void> => {
-  const res = await fetch('/api/auth/logout', {
-    method: 'POST',
-    credentials: 'include',
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    const error = new Error(errorData.error || 'Logout failed') as CustomError;
-    error.status = res.status;
-    throw error;
+  try {
+    await api.post('/auth/logout', null, { withCredentials: true });
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const error = new Error(
+        err.response.data.error || 'Logout failed',
+      ) as CustomError;
+      error.status = err.response.status;
+      throw error;
+    }
+    throw err;
   }
 };
 
 export const getSession = async (): Promise<{ valid: boolean }> => {
   return fetchWithRetry(() =>
-    api.get<{ valid: boolean }>('/auth/session').then((res) => res.data),
+    api
+      .get<{ valid: boolean }>('/auth/session', { withCredentials: true })
+      .then((res) => res.data),
   );
 };
 
 export const getCurrentUser = async (): Promise<User> => {
   return fetchWithRetry(() =>
-    api.get<User>('/users/me').then((res) => res.data),
+    api
+      .get<User>('/users/me', { withCredentials: true })
+      .then((res) => res.data),
   );
 };
 
@@ -156,7 +161,9 @@ export const updateCurrentUser = async (
   payload: UpdateUserDto,
 ): Promise<User> => {
   return fetchWithRetry(() =>
-    api.patch<User>('/users/me', payload).then((res) => res.data),
+    api
+      .patch<User>('/users/me', payload, { withCredentials: true })
+      .then((res) => res.data),
   );
 };
 

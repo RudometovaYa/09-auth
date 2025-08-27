@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Roboto } from 'next/font/google';
 import './globals.css';
+
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
 const robotoFont = Roboto({
   variable: '--font-roboto',
@@ -54,13 +56,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${robotoFont.variable}`}
       >
         <TanStackProvider>
-          <div className="layout">
-            <Header />
-            <main className="main">
-              {children} {modal}
-            </main>
-            <Footer />
-          </div>
+          <AuthProvider>
+            <div className="layout">
+              <Header />
+              <main className="main">
+                {children} {modal}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </TanStackProvider>
         <div id="modal-root"></div>
       </body>

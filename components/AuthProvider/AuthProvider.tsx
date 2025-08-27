@@ -1,18 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/lib/store/authStore';
 import { getSession, getCurrentUser } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore';
 
 type Props = {
   children: React.ReactNode;
 };
 
 const AuthProvider = ({ children }: Props) => {
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearIsAuthenticated = useAuthStore(
-    (state) => state.clearIsAuthenticated,
-  );
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,25 +20,25 @@ const AuthProvider = ({ children }: Props) => {
         if (session.valid) {
           const user = await getCurrentUser();
           if (user) {
-            setUser(user);
+            setAuth(user);
           } else {
-            clearIsAuthenticated();
+            clearAuth();
           }
         } else {
-          clearIsAuthenticated();
+          clearAuth();
         }
       } catch {
-        clearIsAuthenticated();
+        clearAuth();
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [setUser, clearIsAuthenticated]);
+  }, [setAuth, clearAuth]);
 
   if (loading) {
-    return <div>Loading...</div>; // або кастомний лоадер
+    return <div>Loading...</div>;
   }
 
   return <>{children}</>;

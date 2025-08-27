@@ -3,16 +3,18 @@
 import { useState } from 'react';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/lib/api/clientApi';
+import type { CustomError } from '@/lib/api/clientApi';
 
 import css from './SignUpPage.module.css';
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,46 +23,22 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        if (res.status === 409) {
-          setError('Користувач з таким email вже існує.');
-        } else {
-          setError('Помилка реєстрації. Спробуйте пізніше.');
-        }
-        return;
-      }
-
-      const user = await res.json();
-      setUser(user);
+      const user = await registerUser(email, password);
+      setAuth(user);
       router.push('/profile');
-    } catch (err) {
-      console.error('Sign up error:', err);
-      setError('Помилка реєстрації. Спробуйте пізніше.');
+    } catch (err: unknown) {
+      const error = err as CustomError;
+      console.error('Sign up error:', error);
+
+      if (error?.status === 409) {
+        setError('Користувач з таким email вже існує.');
+      } else {
+        setError('Помилка реєстрації. Спробуйте пізніше.');
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  /*  try {
-      const user = await registerUser(email, password);
-      setUser(user);
-      router.push('/profile');
-    } catch (err) {
-      console.error('Sign up error:', err);
-      setError('Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  }; */
 
   return (
     <main className={css.mainContent}>

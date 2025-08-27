@@ -8,7 +8,7 @@ import css from './SignInPage.module.css';
 
 export default function SignInPage() {
   const router = useRouter();
-  const { setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function SignInPage() {
 
     try {
       const user = await loginUser(email, password);
-      setUser(user);
+      setAuth(user);
       router.push('/profile');
     } catch (err) {
       console.error('Login error:', err);

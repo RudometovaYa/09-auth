@@ -9,13 +9,7 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { logoutUser, getSession, getCurrentUser } from '@/lib/api/clientApi';
 
 export default function AuthNavigation() {
-  const {
-    isAuthenticated,
-    user,
-    setUser,
-    setIsAuthenticated,
-    clearIsAuthenticated,
-  } = useAuthStore();
+  const { isAuth, user, setAuth, clearAuth } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -25,24 +19,23 @@ export default function AuthNavigation() {
         const session = await getSession();
         if (session.valid && !user) {
           const userData = await getCurrentUser();
-          setUser(userData);
-          setIsAuthenticated();
+          setAuth(userData);
         }
-      } catch (err: unknown) {
+      } catch (err) {
         console.error('Session check failed:', err);
-        clearIsAuthenticated();
+        clearAuth();
       } finally {
         setLoading(false);
       }
     };
 
     checkSession();
-  }, [user, setUser, setIsAuthenticated, clearIsAuthenticated]);
+  }, [user, setAuth, clearAuth]);
 
   const handleLogout = async () => {
     try {
       await logoutUser();
-      clearIsAuthenticated();
+      clearAuth();
       router.push('/sign-in');
     } catch (error) {
       console.error('Logout error:', error);
@@ -53,7 +46,7 @@ export default function AuthNavigation() {
 
   return (
     <>
-      {isAuthenticated ? (
+      {isAuth ? (
         <>
           <li className={css.navigationItem}>
             <Link
