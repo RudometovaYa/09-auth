@@ -46,9 +46,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
     logErrorResponse({ message: (error as Error).message });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
