@@ -45,11 +45,11 @@ export async function fetchNotes(
   page = 1,
   perPage = 12,
   search = '',
-  category?: string,
+  tag?: string /* renamed */,
 ): Promise<NoteResponse> {
   const params: FetchNotesParams = { page, perPage };
   if (search.trim()) params.search = search.trim();
-  if (category && category.toLowerCase() !== 'all') params.tag = category;
+  if (tag && tag.toLowerCase() !== 'all') params.tag = tag;
 
   const cacheKey = JSON.stringify(params);
   if (cache[cacheKey]) return cache[cacheKey];
@@ -63,6 +63,7 @@ export async function fetchNotes(
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
+  Object.keys(cache).forEach((key) => delete cache[key]); /* invalidate cache */
   return fetchWithRetry(() =>
     api.get<Note>(`/notes/${id}`).then((res) => res.data),
   );
@@ -75,6 +76,7 @@ export async function createNote(newNote: NewNoteData): Promise<Note> {
 }
 
 export async function deleteNote(noteId: string): Promise<Note> {
+  Object.keys(cache).forEach((key) => delete cache[key]); /* invalidate cache */
   return fetchWithRetry(() =>
     api.delete<Note>(`/notes/${noteId}`).then((res) => res.data),
   );
